@@ -121,6 +121,17 @@ def detect_face(img):
 #
 # Now you have got a face detector and you know the 4 steps to prepare the data, so are you ready to code the prepare data step? Yes? So let's do it.
 
+def listFiles(path):
+    if (os.path.isdir(path) == False):
+        # base case:  not a folder, but a file, so return singleton list with its path
+        return [path]
+    else:
+        # recursive case: it's a folder, return list of all paths
+        files = [ ]
+        for filename in os.listdir(path):
+            files += listFiles(path + "/" + filename)
+        return files
+
 # In[4]:
 
 #this function will read all persons' training images, detect face from each image
@@ -130,8 +141,19 @@ def prepare_training_data(data_folder_path):
 
     #------STEP-1--------
     #get the directories (one directory for each subject) in data folder
-    dirs = os.listdir(data_folder_path)
+    print(data_folder_path)
+    newFiles = listFiles(data_folder_path)
+    oldFiles = np.load("training-data/dirs.npy")
+    print(newFiles, oldFiles)
+    if(set(newFiles) == set(oldFiles)):
+        print("EQUAL DIRECTORIES")
+        faces = np.load("training-data/faces.npy")
+        labels = np.load("training-data/labels.npy")
+        return faces, labels
+    print("DIFFERENT DIRECTORIES")
+    np.save("training-data/dirs.npy", newFiles)
 
+    dirs = os.listdir(data_folder_path)
     #list to hold all subject faces
     faces = []
     #list to hold labels for all subjects
@@ -176,7 +198,7 @@ def prepare_training_data(data_folder_path):
 
             #display an image window to show the image
             cv2.imshow("Training on image...", cv2.resize(image, (400, 500)))
-            cv2.waitKey(100)
+            cv2.waitKey(1)
 
             #detect face
             face, rect = detect_face(image)
@@ -190,10 +212,14 @@ def prepare_training_data(data_folder_path):
                 #add label for this face
                 labels.append(label)
 
+
+
     cv2.destroyAllWindows()
     cv2.waitKey(1)
     cv2.destroyAllWindows()
-
+    print("Training Data:", faces, "LOL", labels)
+    np.save("training-data/faces.npy", faces)
+    np.save("training-data/labels.npy", labels)
     return faces, labels
 
 
@@ -306,6 +332,8 @@ def predict(test_img):
     #get name of respective label returned by face recognizer
     label_text = subjects[label]
 
+    print("I THINK ITS:", label_text)
+
     #draw a rectangle around face detected
     draw_rectangle(img, rect)
     #draw name of predicted person
@@ -319,23 +347,23 @@ def predict(test_img):
 
 print("Predicting images...")
 
-#load test images
-test_img1 = cv2.imread("test-data/test1.jpg")
-test_img2 = cv2.imread("test-data/test2.jpg")
-test_img3 = cv2.imread("test-data/test3.jpg")
+limit = 3
+
+test_images = []
+for i in range(limit):
+    test_images.append(cv2.imread(f"test-data/test{i+1}.jpg"))
 
 #perform a prediction
-predicted_img1 = predict(test_img1)
-predicted_img2 = predict(test_img2)
-print("first 2 success")
-predicted_img3 = predict(test_img3)
+predicted_images = []
+for i in range(limit):
+    predicted_images.append(predict(test_images[i]))
+
 print("Prediction complete")
 
 #display both images
-cv2.imshow(subjects[1], cv2.resize(predicted_img1, (400, 500)))
-cv2.imshow(subjects[2], cv2.resize(predicted_img2, (400, 500)))
-cv2.imshow(subjects[3], cv2.resize(predicted_img3, (400, 500)))
-cv2.waitKey(0)
+for i in range(limit):
+    cv2.imshow(subjects[i+1], cv2.resize(predicted_images[i], (400, 500)))
+cv2.waitKey(3000)
 cv2.destroyAllWindows()
 cv2.waitKey(1)
 cv2.destroyAllWindows()
