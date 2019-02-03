@@ -1,18 +1,35 @@
+# OpenCV Python program to detect cars in video frame
+# import libraries of python OpenCV
+import cv2
 
-def detect_car(img):
-    #convert the test image to gray image as opencv face detector expects gray images
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #load OpenCV face detector, I am using LBP which is fast
-    #there is also a more accurate but slow Haar classifier
-    face_cascade = cv2.CascadeClassifier('opencv-files/cars.xml')
-    #let's detect multiscale (some images may be closer to camera than others) images
-    #result is a list of faces
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5);
-    #if no faces are detected then return original img
-    if (len(faces) == 0):
-        return None, None
-    #under the assumption that there will be only one face,
-    #extract the face area
-    (x, y, w, h) = faces[0]
-    #return only the face part of the image
-    return gray[y:y+w, x:x+h], faces[0]
+# capture frames from a video
+cap = cv2.VideoCapture('video.avi')
+
+# Trained XML classifiers describes some features of some object we want to detect
+car_cascade = cv2.CascadeClassifier('opencv-files/cars.xml')
+
+# loop runs if capturing has been initialized.
+while True:
+    # reads frames from a video
+    ret, frames = cap.read()
+
+    # convert to gray scale of each frames
+    gray = cv2.cvtColor(frames, cv2.COLOR_BGR2GRAY)
+
+
+    # Detects cars of different sizes in the input image
+    cars = car_cascade.detectMultiScale(gray, 1.1, 1)
+
+    # To draw a rectangle in each cars
+    for (x,y,w,h) in cars:
+        cv2.rectangle(frames,(x,y),(x+w,y+h),(0,0,255),2)
+
+    # Display frames in a window
+    cv2.imshow('video2', frames)
+
+    # Wait for Esc key to stop
+    if cv2.waitKey(33) == 27:
+        break
+
+# De-allocate any associated memory usage
+cv2.destroyAllWindows()

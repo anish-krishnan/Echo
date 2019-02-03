@@ -193,7 +193,6 @@ def prepare_training_data(data_folder_path):
             cv2.waitKey(1)
             #detect face
             face, rect = detect_face(image)
-            car, rect = detect_car(image)
 
             #------STEP-4--------
             #for the purpose of this tutorial
@@ -324,7 +323,7 @@ def predict(test_img):
     #get name of respective label returned by face recognizer
     label_text = subjects[label]
 
-    print("I THINK ITS:", label_text)
+    print("I THINK ITS:",num,  label_text)
 
     #draw a rectangle around face detected
     draw_rectangle(img, rect)
@@ -339,7 +338,7 @@ def predict(test_img):
 haar_face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_alt.xml')
 print("Predicting images...")
 
-limit = 5
+limit = 6
 
 test_images = []
 for i in range(limit):
@@ -356,6 +355,9 @@ for (image, num) in test_images:
 predicted_images = []
 for (image, num) in filtered_images:
     predicted_images.append((predict(image), num))
+
+img, num = test_images[-1]
+print("lol car stuff", img, num, detect_car(img))
 
 print("Prediction complete")
 
