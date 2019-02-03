@@ -1,11 +1,11 @@
 # Echo
-Echo is an intelligent, environment-aware smart cane that acts as assistive tech for the visually or mentally impaired. Echo uses Computer Vision based Machine Learning to train and recognize the faces it sees an match them with names. 
+Echo is an intelligent, environment-aware smart cane that acts as assistive tech for the visually or mentally impaired. Echo uses Computer Vision based Machine Learning to train and recognize the faces it sees an match them with names.
 ___
 ## Overview
 
 Today, over 5 million Americans are living with Alzheimer's. In fact, 1 in 10 people of age 65 and older has Alzheimer's or dementia. Often, those afflicted will have trouble remembering names from faces and recalling memories.
 
-Right now, there's no assistive technology to help Alzheimer's patients remember people or recall faces. What if we could build a solution to this problem affecting millions worldwide??
+Right now, there's no assistive technology to help Alzheimer's patients remember people or recall faces. What if we could build a solution to this problem affecting millions worldwide?
 
 **Echo does exactly that!**
 
@@ -42,5 +42,3 @@ We wanted to make sure that the form factor of our hack could be experience just
 ## Empowering the impaired
 
 Echo empowers the impaired to become more independent and engage in their daily routines. This smart cane acts both as a helpful accessory that can catalyze social interaction and also a watchdog to quickly call help in an emergency. Currently Echo provides assistance in certain use cases, however it can be expanded to encompass much more. Echo is meant to be a convenient, embedded way to assist the elderly or visually impaired, and is a platform which can be added on to in the future. Features such as localization and navigation for the visually impaired and GPS tracking for individuals with Alzheimer's are both extremely useful and easily integratable into the Echo framework. This is only an echo of what it could be in the future.  
-
-
