@@ -22,7 +22,7 @@ When Echo hears an introduction being made, it uses its camera to continuously t
   * gstreamer for making TCP video and audio streams
   * SMTP for email capabilities (to contact authorities and relatives)
 
-##Echo: The Hacking Process
+## Echo: The Hacking Process
 
 There are many moving parts to Echo. We had to integrate an interface between Natural Language Processing and Facial Recognition. Furthermore, we had to manage a TCP stream between the Raspberry Pi, which interacts with our ML backend on a computer. Ensuring that all the parts seamlessly work involved hours of debugging and unit testing. Furthermore, we had to fine tune parameters such as stream quality to ensure that the Facial Recognition worked but we did not experience high latency.
 
