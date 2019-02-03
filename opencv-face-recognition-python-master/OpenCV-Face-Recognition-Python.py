@@ -42,7 +42,6 @@ import numpy as np
 # **Note:** As we have not assigned `label 0` to any person so **the mapping for label 0 is empty**.
 
 # In[2]:
-
 #there is no label 0 in our training data so subject name for index/label 0 is empty
 subjects = ["", "Ramiz Raja", "Elvis Presley", "Advaith Sethuraman"]
 
@@ -323,7 +322,7 @@ def predict(test_img):
     #get name of respective label returned by face recognizer
     label_text = subjects[label]
 
-    print("I THINK ITS:",num,  label_text)
+    print("I THINK ITS:",label_text)
 
     #draw a rectangle around face detected
     draw_rectangle(img, rect)
@@ -354,10 +353,11 @@ for (image, num) in test_images:
 #perform a prediction
 predicted_images = []
 for (image, num) in filtered_images:
+    print(num)
     predicted_images.append((predict(image), num))
 
 img, num = test_images[-1]
-print("lol car stuff", img, num, detect_car(img))
+print(num, predict(img))
 
 print("Prediction complete")
 
