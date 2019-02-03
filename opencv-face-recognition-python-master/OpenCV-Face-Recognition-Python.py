@@ -3,17 +3,10 @@
 
 # Face Recognition with OpenCV
 
-# To detect faces, I will use the code from my previous article on [face detection](https://www.superdatascience.com/opencv-face-detection/). So if you have not read it, I encourage you to do so to understand how face detection works and its Python coding.
-
 # ### Import Required Modules
-
-# Before starting the actual coding we need to import the required modules for coding. So let's import them first.
-#
 # - **cv2:** is _OpenCV_ module for Python which we will use for face detection and face recognition.
 # - **os:** We will use this Python module to read our training directories and file names.
 # - **numpy:** We will use this module to convert Python lists to numpy arrays as OpenCV face recognizers accept numpy arrays.
-
-# In[1]:
 
 #import OpenCV module
 import cv2
@@ -85,34 +78,23 @@ subjects = ["", "Ramiz Raja", "Elvis Presley", "Advaith Sethuraman"]
 # 2. For each subject, extract label number. **Do you remember that our folders have a special naming convention?** Folder names follow the format `sLabel` where `Label` is an integer representing the label we have assigned to that subject. So for example, folder name `s1` means that the subject has label 1, s2 means subject label is 2 and so on. The label extracted in this step is assigned to each face detected in the next step.
 # 3. Read all the images of the subject, detect face from each image.
 # 4. Add each face to faces vector with corresponding subject label (extracted in above step) added to labels vector.
-#
-# **[There should be a visualization for above steps here]**
-
-# Did you read my last article on [face detection](https://www.superdatascience.com/opencv-face-detection/)? No? Then you better do so right now because to detect faces, I am going to use the code from my previous article on [face detection](https://www.superdatascience.com/opencv-face-detection/). So if you have not read it, I encourage you to do so to understand how face detection works and its coding. Below is the same code.
-
-# In[3]:
 
 #function to detect face using OpenCV
 def detect_face(img):
     #convert the test image to gray image as opencv face detector expects gray images
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
     #load OpenCV face detector, I am using LBP which is fast
     #there is also a more accurate but slow Haar classifier
     face_cascade = cv2.CascadeClassifier('opencv-files/lbpcascade_frontalface.xml')
-
     #let's detect multiscale (some images may be closer to camera than others) images
     #result is a list of faces
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5);
-
     #if no faces are detected then return original img
     if (len(faces) == 0):
         return None, None
-
     #under the assumption that there will be only one face,
     #extract the face area
     (x, y, w, h) = faces[0]
-
     #return only the face part of the image
     return gray[y:y+w, x:x+h], faces[0]
 
@@ -138,7 +120,6 @@ def listFiles(path):
 #and will return two lists of exactly same size, one list
 # of faces and another list of labels for each face
 def prepare_training_data(data_folder_path):
-
     #------STEP-1--------
     #get the directories (one directory for each subject) in data folder
     print(data_folder_path)
@@ -152,12 +133,9 @@ def prepare_training_data(data_folder_path):
         return faces, labels
     print("DIFFERENT DIRECTORIES")
     np.save("training-data/dirs.npy", newFiles)
-
     dirs = os.listdir(data_folder_path)
     #list to hold all subject faces
-    faces = []
-    #list to hold labels for all subjects
-    labels = []
+    faces, labels = [], []
 
     #let's go through each directory and read images within it
     for dir_name in dirs:
@@ -344,25 +322,34 @@ def predict(test_img):
 # Now that we have the prediction function well defined, next step is to actually call this function on our test images and display those test images to see if our face recognizer correctly recognized them. So let's do it. This is what we have been waiting for.
 
 # In[10]:
-
+haar_face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_alt.xml')
 print("Predicting images...")
 
-limit = 3
+limit = 5
 
 test_images = []
 for i in range(limit):
-    test_images.append(cv2.imread(f"test-data/test{i+1}.jpg"))
+    test_images.append((cv2.imread(f"test-data/test{i+1}.jpg"), i+1))
+
+filtered_images = []
+for (image, num) in test_images:
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = haar_face_cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=5);
+    if(len(faces) > 0):
+        filtered_images.append((image, num))
 
 #perform a prediction
 predicted_images = []
-for i in range(limit):
-    predicted_images.append(predict(test_images[i]))
+for (image, num) in filtered_images:
+    predicted_images.append((predict(image), num))
 
 print("Prediction complete")
 
 #display both images
-for i in range(limit):
-    cv2.imshow(subjects[i+1], cv2.resize(predicted_images[i], (400, 500)))
+for i in range(len(predicted_images)):
+    (image, num) = predicted_images[i]
+    cv2.imshow(subjects[i+1], cv2.resize(image, (400, 500)))
+
 cv2.waitKey(3000)
 cv2.destroyAllWindows()
 cv2.waitKey(1)
