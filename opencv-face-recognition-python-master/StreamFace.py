@@ -306,22 +306,13 @@ def predict(test_img):
     img = test_img.copy()
     #detect face from the image
     face, rect = detect_face(img)
-
-
+    #predict the image using our face recognizer
     try:
-        #predict the image using our face recognizer
         label, confidence = face_recognizer.predict(face)
-        print(confidence)
-        if(confidence > 75):
-            print("Low confidence :(")
-            os.system("say Time to meet a new friend!")
-            return
-
     except:
         print("Unknown Person")
-        os.system("say Lets meet a new friend!")
+        os.system("A new friend!")
         return
-
     #get name of respective label returned by face recognizer
     label_text = subjects[label]
 
@@ -353,8 +344,11 @@ while True:
         faces = haar_face_cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=5);
         if(len(faces) > 0):
             #face detected in frame
-            predict(image)
-            pass
+            try:
+                predict(image)
+            except:
+                print("Unknown Person!")
+                os.system(f"A new person!")
         print("I SEE", len(faces), "FACES!!!")
 
     if(cv2.waitKey(1) == ord('x')):
