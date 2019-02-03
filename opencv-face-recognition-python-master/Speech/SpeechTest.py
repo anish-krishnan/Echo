@@ -2,7 +2,7 @@
 
 import re
 import sys
-
+import os
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
@@ -12,9 +12,10 @@ from six.moves import queue
 from google.cloud import language
 from google.cloud.language import enums as enums_language
 from google.cloud.language import types as types_language
-from Person import Person
+sys.path.insert(0, "/Users/anishkrishnan/GitHub/PennApps2018/opencv-face-recognition-python-master/Person")
+import Person
 
-
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "PennApps1819.json"
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms

@@ -50,7 +50,7 @@ url = 'tcp://10.251.83.165:8081'
 cap = cv2.VideoCapture(url)
 print("hello")
 #there is no label 0 in our training data so subject name for index/label 0 is empty
-subjects = ["", "Anish Krishnan", "Vashisth Parekh", "wtff"]
+subjects = ["", "Anish Krishnan", "Vashisth Parekh"]
 
 
 # ### Prepare training data
