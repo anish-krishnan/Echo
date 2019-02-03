@@ -23,6 +23,7 @@ When Echo hears an introduction being made, it uses its camera to continuously t
   * SMTP for email capabilities (to contact authorities and relatives)
 
 ##Echo: The Hacking Process
+
 There are many moving parts to Echo. We had to integrate an interface between Natural Language Processing and Facial Recognition. Furthermore, we had to manage a TCP stream between the Raspberry Pi, which interacts with our ML backend on a computer. Ensuring that all the parts seamlessly work involved hours of debugging and unit testing. Furthermore, we had to fine tune parameters such as stream quality to ensure that the Facial Recognition worked but we did not experience high latency.
 
 Echo attempts to solve a simple problem: individuals with Alzheimer's often forget faces easily and need assistance in order to help them socially and functionally in the real world. We rely on the fact that by using AI/ML, we can train a model to help the individual in a way that other solutions cannot. By integrating this with technology like Natural Language Processing, we can create natural interfaces to an important problem.
