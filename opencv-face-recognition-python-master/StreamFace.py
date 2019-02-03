@@ -16,6 +16,7 @@ import os
 #it is needed by OpenCV face recognizers
 import numpy as np
 import scipy.misc
+# import Speech.TextToSpeech
 # from PIL import Image
 
 
@@ -311,6 +312,9 @@ def predict(test_img):
     label_text = subjects[label]
 
     print("I THINK ITS:", label_text)
+    os.system(f"say {label_text} is here")
+
+
 
     #draw a rectangle around face detected
     draw_rectangle(img, rect)
@@ -332,7 +336,7 @@ while True:
     _, stream = cap.read()
     cv2.imshow('stream',stream)
     image = stream
-    if(counter % 100 == 0):
+    if(counter % 50 == 0):
         # cv2.imwrite(f"newtraining/s2/outfile{counter}.jpg", image)
         gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = haar_face_cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=5);

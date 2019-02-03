@@ -1,5 +1,8 @@
 from google.cloud import texttospeech
 
+import os
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "PennApps1819.json"
 
 def textToSpeech(text):
     # Instantiates a client
