@@ -16,6 +16,7 @@ import os
 #it is needed by OpenCV face recognizers
 import numpy as np
 import scipy.misc
+from Speech.SpeechTest import *
 # import Speech.TextToSpeech
 # from PIL import Image
 
@@ -50,8 +51,10 @@ url = 'tcp://10.251.83.165:8081'
 cap = cv2.VideoCapture(url)
 print("hello")
 #there is no label 0 in our training data so subject name for index/label 0 is empty
-subjects = ["", "Anish Krishnan", "Vashisth Parekh"]
-
+# subjects = ["", "Anish Krishnan", "Vashisth Parekh"]
+person_dict = np.load("Person/person_dict.npy")
+subjects = dict(enumerate(person_dict.flatten(), 1))[1]
+print(subjects)
 
 # ### Prepare training data
 
@@ -224,13 +227,46 @@ def prepare_training_data(data_folder_path):
 #data will be in two lists of same size
 #one list will contain all the faces
 #and other list will contain respective labels for each face
-print("Preparing data...")
-faces, labels = prepare_training_data("newtraining")
-print("Data prepared")
+faces, labels = None, None
+face_recognizer = None
 
-#print total faces and labels
-print("Total faces: ", len(faces))
-print("Total labels: ", len(labels))
+def retrainModel():
+    global faces
+    global labels
+    global face_recognizer
+    global subjects
+    
+    os.system("say Retraining the model!")
+
+    person_dict = np.load("Person/person_dict.npy")
+    subjects = dict(enumerate(person_dict.flatten(), 1))[1]
+
+    print("Preparing data...")
+    faces, labels = prepare_training_data("newtraining")
+    print("Data prepared")
+
+    #print total faces and labels
+    print("Total faces: ", len(faces))
+    print("Total labels: ", len(labels))
+    #create our LBPH face recognizer
+    face_recognizer = cv2.face.LBPHFaceRecognizer_create()
+
+    #or use EigenFaceRecognizer by replacing above line with
+    #face_recognizer = cv2.face.EigenFaceRecognizer_create()
+
+    #or use FisherFaceRecognizer by replacing above line with
+    #face_recognizer = cv2.face.FisherFaceRecognizer_create()
+
+
+    # Now that we have initialized our face recognizer and we also have prepared our training data, it's time to train the face recognizer. We will do that by calling the `train(faces-vector, labels-vector)` method of face recognizer.
+
+    # In[7]:
+
+    #train our face recognizer of our training faces
+    face_recognizer.train(faces, np.array(labels))
+    return
+
+retrainModel()
 
 
 # This was probably the boring part, right? Don't worry, the fun stuff is coming up next. It's time to train our own face recognizer so that once trained it can recognize new faces of the persons it was trained on. Read? Ok then let's train our face recognizer.
@@ -247,22 +283,7 @@ print("Total labels: ", len(labels))
 
 # In[6]:
 
-#create our LBPH face recognizer
-face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-#or use EigenFaceRecognizer by replacing above line with
-#face_recognizer = cv2.face.EigenFaceRecognizer_create()
-
-#or use FisherFaceRecognizer by replacing above line with
-#face_recognizer = cv2.face.FisherFaceRecognizer_create()
-
-
-# Now that we have initialized our face recognizer and we also have prepared our training data, it's time to train the face recognizer. We will do that by calling the `train(faces-vector, labels-vector)` method of face recognizer.
-
-# In[7]:
-
-#train our face recognizer of our training faces
-face_recognizer.train(faces, np.array(labels))
 
 
 # **Did you notice** that instead of passing `labels` vector directly to face recognizer I am first converting it to **numpy** array? This is because OpenCV expects labels vector to be a `numpy` array.
@@ -297,6 +318,22 @@ def draw_text(img, text, x, y):
 # Now that we have the drawing functions, we just need to call the face recognizer's `predict(face)` method to test our face recognizer on test images. Following function does the prediction for us.
 
 # In[9]:
+outfileCount = 0
+def train(image):
+    global outfileCount
+
+    outfileCount += 1
+    counter = np.load("/Users/anishkrishnan/GitHub/PennApps2018/faceRecognition/Person/training_counter_id.npy")
+    person_dict = np.load("/Users/anishkrishnan/GitHub/PennApps2018/faceRecognition/Person/person_dict.npy")
+    updated_person_dict = dict(enumerate(person_dict.flatten(), 1))[1]
+    # print(person_dict.item().get(1))
+    count = counter[0] - 1
+    name = updated_person_dict[count]
+    os.system(f"say Learning with data from {name}")
+    print("WRITING TO:", f"newtraining/s{count}/outfile{outfileCount}.jpg")
+    cv2.imwrite(f"newtraining/s{count}/outfile{outfileCount}.jpg", image)
+
+
 
 #this function recognizes the person in image passed
 #and draws a rectangle around detected face with name of the
@@ -311,16 +348,20 @@ def predict(test_img):
     try:
         #predict the image using our face recognizer
         label, confidence = face_recognizer.predict(face)
-        print(confidence)
+        print("CONFIDENCE:", confidence)
         if(confidence > 75):
             print("Low confidence :(")
-            os.system("say Time to meet a new friend!")
-            return
+            os.system("say Hi, what is your name?")
+            detectSpeech()
+            train(test_img)
+            return True
 
     except:
         print("Unknown Person")
-        os.system("say Lets meet a new friend!")
-        return
+        os.system("say Lets meet a new friend. What is your name?")
+        detectSpeech()
+        train(test_img)
+        return True
 
     #get name of respective label returned by face recognizer
     label_text = subjects[label]
@@ -332,7 +373,7 @@ def predict(test_img):
     #draw name of predicted person
     draw_text(img, label_text, rect[0], rect[1]-5)
 
-    return img
+    return False
 
 # Now that we have the prediction function well defined, next step is to actually call this function on our test images and display those test images to see if our face recognizer correctly recognized them. So let's do it. This is what we have been waiting for.
 
@@ -342,6 +383,8 @@ print("Predicting images...")
 
 limit = 6
 counter = 0
+isTraining = False
+trainCount = 0
 while True:
     counter += 1
     _, stream = cap.read()
@@ -353,7 +396,16 @@ while True:
         faces = haar_face_cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=5);
         if(len(faces) > 0):
             #face detected in frame
-            predict(image)
+            if(isTraining):
+                if(trainCount == 5):
+                    isTraining = False
+                    trainCount = 0
+                    retrainModel()
+                else:
+                    trainCount += 1
+                    train(image)
+            else:
+                isTraining = predict(image)
             pass
         print("I SEE", len(faces), "FACES!!!")
 

@@ -12,10 +12,10 @@ from six.moves import queue
 from google.cloud import language
 from google.cloud.language import enums as enums_language
 from google.cloud.language import types as types_language
-sys.path.insert(0, "/Users/anishkrishnan/GitHub/PennApps2018/opencv-face-recognition-python-master/Person")
+sys.path.insert(0, "/Users/anishkrishnan/GitHub/PennApps2018/faceRecognition/Person")
 import Person
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "PennApps1819.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/anishkrishnan/GitHub/PennApps2018/faceRecognition/Speech/PennApps1819.json"
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
@@ -85,6 +85,7 @@ class MicrophoneStream(object):
             yield b''.join(data)
 # [END audio_stream]
 
+foundPerson = False
 def listen_print_loop(responses):
     """Iterates through server responses and prints them.
     The responses passed is a generator that will block until a response
@@ -150,7 +151,12 @@ def listen_print_loop(responses):
                 print(u'{:<16}: {}'.format('salience', entity.salience))
 
                 if entity.type == 1:
-                    new_person = Person.Person(entity.name)
+                    if not Person.isNameInDB(entity.name):
+                        new_person = Person.Person(entity.name)
+                        foundPerson = True
+                        print("WOWOW BABYYYY")
+                        return True
+
             #         # Save image
             #         # Trigger model to train again
 
@@ -164,7 +170,10 @@ def listen_print_loop(responses):
 
             num_chars_printed = 0
 
-def main():
+    return foundPerson
+
+# def main():
+def detectSpeech():
     # for a list of supported languages.
     language_code = 'en-US'  # a BCP-47 language tag
 
@@ -183,17 +192,6 @@ def main():
                     for content in audio_generator)
 
         responses = client.streaming_recognize(streaming_config, requests)
-
-
-
         # Now, put the transcription responses to use.
-        listen_print_loop(responses)
-
-
-
-
-
-
-
-if __name__ == '__main__':
-    main()
+        if listen_print_loop(responses):
+            return
