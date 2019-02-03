@@ -3,9 +3,18 @@ Echo is an intelligent, environment-aware smart cane that acts as assistive tech
 ___
 ## Overview
 
-Over 5 million Americans are living with Alzheimer's. In fact, 1 in 10 people of age 65 and older has Alzheimer's or dementia. Often, those afflicted will have trouble remembering names from faces and recalling memories.
+Today, over 5 million Americans are living with Alzheimer's. In fact, 1 in 10 people of age 65 and older has Alzheimer's or dementia. Often, those afflicted will have trouble remembering names from faces and recalling memories.
 
-**Echo does exactly that!** Echo is a piece of assistive technology that helps the owner keep track of people he/she meets and provide a way for the owner to stay safe by letting them contact the authorities if they feel like they're in danger.
+Right now, there's no assistive technology to help Alzheimer's patients remember people or recall faces. What if we could build a solution to this problem affecting millions worldwide??
+
+**Echo does exactly that!**
+
+Echo is an intelligent, environment-aware smart cane that acts as assistive tech for the visually or mentally impaired.
+
+<!-- Echo is a piece of assistive technology that  -->
+
+
+Our tech helps the owner keep track of people they meet and help the owner feel safer by letting them call assistance with the push of a button if they feel like they're in danger.
 
 Using cameras, microphones, and state of the art facial recognition, natural language processing, and speech to text software, Echo is able recognize familiar and new faces allowing patients to confidently meet new people and learn more about the world around them.
 
